@@ -2,7 +2,7 @@ extern crate specs;
 use specs::prelude::*;
 use super::{Viewshed, Mob, WantsToMelee, RunState, Map, Position};
 extern crate rltk;
-use rltk::{Point, console};
+use rltk::{Point};
 
 pub struct MobAI {}
 

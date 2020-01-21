@@ -6,7 +6,9 @@ use specs::prelude::*;
 extern crate specs_derive;
 
 mod components;
-mod map ;
+mod gui;
+mod gamelog;
+mod map;
 mod player;
 mod rect;
 mod visibility_system;
@@ -15,6 +17,8 @@ mod map_indexing_system;
 mod melee_combat_system;
 mod damage_system;
 pub use components::*;
+pub use gui::draw_ui;
+pub use gamelog::GameLog;
 pub use map::*;
 pub use player::*;
 pub use rect::Rect;
@@ -91,11 +95,14 @@ impl GameState for State {
             let idx = map.xy_idx(pos.x, pos.y);
             if map.visible_tiles[idx] { ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph) }
         }
+
+        draw_ui(&self.ecs, ctx);
     }
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "Hello Rust World", "resources");
+    let mut context = Rltk::init_simple8x8(80, 50, "Hello Rust World", "resources");
+    context.with_post_scanlines(true);
     let mut gs = State {
         ecs: World::new(),
     };
@@ -153,6 +160,7 @@ fn main() {
     }
 
     gs.ecs.insert(RunState::Init);
+    gs.ecs.insert(gamelog::GameLog{ entries : vec!["Welcome to RustRL".to_string()] });
     gs.ecs.insert(map);
     gs.ecs.insert(player_entity);
     gs.ecs.insert(Point::new(player_x, player_y));
