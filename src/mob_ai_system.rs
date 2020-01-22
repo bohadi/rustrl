@@ -25,7 +25,8 @@ impl<'a> System<'a> for MobAI {
         for (entity, mut viewshed, _m, mut pos) in (&entities, &mut viewshed, &mob, &mut position).join() {
             let dist = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x,pos.y), *player_pos);
             if dist < 1.5 {
-                wants_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
+                wants_melee.insert(entity, WantsToMelee{ target: *player_entity })
+                    .expect("Unable to insert attack");
             } else if viewshed.visible_tiles.contains(&*player_pos) {
                 //console::log(&format!("{} shouts insults!", name.name));
                 let path = rltk::a_star_search(

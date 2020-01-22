@@ -15,6 +15,7 @@ pub struct Renderable {
     pub glyph: u8,
     pub fg: RGB,
     pub bg: RGB,
+    pub render_priority: i32
 }
 
 #[derive(Component)]
@@ -52,3 +53,44 @@ pub struct WantsToMelee {
 pub struct SufferDamage {
     pub amount : i32
 }
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToPickup {
+    pub who: Entity,
+    pub what: Entity
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToDrop {
+    pub item: Entity
+}
+#[derive(Component, Debug, Clone)]
+pub struct WantsToUse {
+    pub item: Entity
+}
+
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub enum Shape { One, Two, Three, Square, ThreeWide, FourWide }
+// * * * ** ** **
+//   * * ** ** **
+//     *    ** **
+// 1 2 3 sq 3w **4w
+
+#[derive(Component, Debug, Clone)]
+pub struct BackpackOf {
+    pub owner: Entity,
+    pub x: i32,
+    pub y: i32
+}
+
+#[derive(Component, Debug)]
+pub struct Item {
+    pub shape: Shape,
+    pub image: char,
+}
+
+#[derive(Component, Debug)]
+pub struct Moongrass {
+    pub heal_amount : i32
+}
+

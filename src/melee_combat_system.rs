@@ -21,10 +21,11 @@ impl<'a> System<'a> for MeleeCombatSystem {
             if stats.hp > 0 && target_stats.hp > 0 {
                 let dmg = i32::max(0, stats.attack - target_stats.defense);
                 if dmg == 0 {
-                    log.entries.insert(0, format!("{} is unable to hurt {}", &name.name, &target_name.name));
+                    log.entries.insert(0, format!("{} is unable to hurt {}.", &name.name, &target_name.name));
                 } else {
-                    log.entries.insert(0, format!("{} hits {}, for {} hp", &name.name, &target_name.name, dmg));
-                    suffers_dmg.insert(wants_melee.target, SufferDamage{ amount: dmg }).expect("Unable to do damage");
+                    log.entries.insert(0, format!("{} hits {} for {} damage.", &name.name, &target_name.name, dmg));
+                    suffers_dmg.insert(wants_melee.target, SufferDamage{ amount: dmg })
+                        .expect("Unable to do damage");
                 }
             }
         }

@@ -1,8 +1,57 @@
 extern crate rltk;
-use rltk::{ RGB, Rltk, Console };
+use rltk::{ RGB, Rltk, Console, VirtualKeyCode };
 extern crate specs;
 use specs::prelude::*;
-use super::{CombatStats, Player, GameLog, Map, Name, Position, Point};
+use super::{CombatStats, Player, GameLog, Map, Name, Position, Point, State, BackpackOf};
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum MenuResult { Cancel, NoResponse, Selected }
+
+pub fn show_character(gs: &mut State, ctx: &mut Rltk) -> MenuResult {
+    MenuResult::Cancel //TODO
+}
+
+pub fn show_inventory(text: &str, gs: &mut State, ctx: &mut Rltk) -> (MenuResult, Option<Entity>) {
+    let player_entity = gs.ecs.fetch::<Entity>();
+    let names = gs.ecs.read_storage::<Name>();
+    let backpack = gs.ecs.read_storage::<BackpackOf>();
+    let entities = gs.ecs.entities();
+
+    let inventory = (&backpack, &names).join().filter(|item| item.0.owner == *player_entity);
+    let count = inventory.count();
+
+    let mut y = (25 - (count / 2)) as i32;
+    ctx.draw_box(15, y-2, 31, (count+3) as i32, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
+    ctx.print_color(18, y-2, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), text);
+    ctx.print_color(18, y+count as i32+1, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "ESC to cancel");
+
+    let mut usable : Vec<Entity> = Vec::new();
+    let mut j = 0;
+    for (entity, _pack, name) in (&entities, &backpack, &names).join().filter(|item| item.1.owner == *player_entity) {
+        ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
+        ctx.set(18, y, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), 97+j as u8);
+        ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
+
+        ctx.print(21, y, &name.name.to_string());
+        usable.push(entity);
+        y += 1;
+        j += 1;
+    }
+
+    match ctx.key {
+        None => (MenuResult::NoResponse, None),
+        Some(key) => {
+            match key { VirtualKeyCode::Escape => {(MenuResult::Cancel, None) }
+                _ => {
+                    let selection = rltk::letter_to_option(key);
+                    if selection > -1 && selection < count as i32 {
+                        (MenuResult::Selected, Some(usable[selection as usize]))
+                    } else { (MenuResult::NoResponse, None) }
+                }
+            }
+        }
+    }
+}
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));

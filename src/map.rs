@@ -5,9 +5,9 @@ use std::cmp::{min, max};
 extern crate specs;
 use specs::prelude::*;
 
-const MAPWIDTH : usize = 80;
-const MAPHEIGHT: usize = 43;
-const MAPCOUNT : usize = MAPWIDTH * MAPHEIGHT;
+pub const MAPWIDTH : usize = 80;
+pub const MAPHEIGHT: usize = 43;
+pub const MAPCOUNT : usize = MAPWIDTH * MAPHEIGHT;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {

@@ -10,7 +10,7 @@ impl<'a> System<'a> for VisibilitySystem {
     type SystemData = ( WriteExpect<'a, Map>,
                         Entities<'a>,
                         WriteStorage<'a, Viewshed>,
-                        WriteStorage<'a, Position>,
+                        ReadStorage<'a, Position>,
                         ReadStorage<'a, Player>);
 
     fn run(&mut self, data : Self::SystemData) {
@@ -19,7 +19,6 @@ impl<'a> System<'a> for VisibilitySystem {
         for (ent,viewshed,pos) in (&entities, &mut viewshed, &pos).join() {
             if viewshed.dirty {
                 viewshed.dirty = false;
-                viewshed.visible_tiles.clear();
                 viewshed.visible_tiles = field_of_view(Point::new(pos.x, pos.y), viewshed.range, &*map);
                 viewshed.visible_tiles.retain(|p| p.x > 0 && p.x < map.width-1 && p.y > 0 && p.y < map.height-1);
 
